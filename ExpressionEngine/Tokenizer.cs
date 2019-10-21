@@ -1,13 +1,33 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace SimpleExpressionEngine
 {
     public class Tokenizer
     {
+        private readonly Dictionary<Token, Token[]> AllowedPrevTokenMap;
+        private readonly Token[] Operations = new[] {Token.Add, Token.Subtract, Token.Multiply, Token.Divide};
+        private readonly Token[] AllowedBeforeOperations = new[] {Token.CloseParens, Token.Identifier, Token.Number};
+
         public Tokenizer(TextReader reader)
         {
+            var all = Enum.GetValues(typeof(Token)).Cast<Token>().ToArray();
+            AllowedPrevTokenMap = new Dictionary<Token, Token[]>() {
+                [Token.EOF] = all,
+                [Token.Add] = AllowedBeforeOperations,
+                [Token.Subtract] = AllowedBeforeOperations.Concat(new[] {Token.OpenParens}).ToArray(),
+                [Token.Multiply] = AllowedBeforeOperations,
+                [Token.Divide] = AllowedBeforeOperations,
+                [Token.OpenParens] = Operations.Concat(new[] {Token.Identifier, Token.Number}).ToArray(),
+                [Token.CloseParens] = new[] {Token.Identifier, Token.Number},
+                [Token.Comma] = new[] {Token.Identifier, Token.Number},
+                [Token.Identifier] = Operations.Concat(new[] {Token.Identifier, Token.Number, Token.OpenParens}).ToArray(),
+                [Token.Number] = Operations.Concat(new[] {Token.Identifier, Token.Number, Token.OpenParens}).ToArray(),
+            };
             _reader = reader;
             NextChar();
             NextToken();
@@ -20,11 +40,15 @@ namespace SimpleExpressionEngine
         double _number;
         string _identifier;
 
+        public Token PrevToken {
+            get { return _prevToken; }
+        }
+
         public Token Token {
             get { return _currentToken; }
             private set {
                 _prevToken = _currentToken;
-                _currentToken = _prevToken;
+                _currentToken = value;
             }
         }
 
@@ -55,42 +79,50 @@ namespace SimpleExpressionEngine
             // Special characters
             switch (_currentChar) {
                 case '\0':
-                    _currentToken = Token.EOF;
+                    Token = Token.EOF;
+                    CheckPrevToken();
                     return;
 
                 case '+':
                     NextChar();
-                    _currentToken = Token.Add;
+                    Token = Token.Add;
+                    CheckPrevToken();
                     return;
 
                 case '-':
                     NextChar();
-                    _currentToken = Token.Subtract;
+                    Token = Token.Subtract;
+                    CheckPrevToken();
                     return;
 
                 case '*':
                     NextChar();
-                    _currentToken = Token.Multiply;
+                    Token = Token.Multiply;
+                    CheckPrevToken();
                     return;
 
                 case '/':
                     NextChar();
-                    _currentToken = Token.Divide;
+                    Token = Token.Divide;
+                    CheckPrevToken();
                     return;
 
                 case '(':
                     NextChar();
-                    _currentToken = Token.OpenParens;
+                    Token = Token.OpenParens;
+                    CheckPrevToken();
                     return;
 
                 case ')':
                     NextChar();
-                    _currentToken = Token.CloseParens;
+                    Token = Token.CloseParens;
+                    CheckPrevToken();
                     return;
 
                 case ',':
                     NextChar();
-                    _currentToken = Token.Comma;
+                    Token = Token.Comma;
+                    CheckPrevToken();
                     return;
             }
 
@@ -107,7 +139,8 @@ namespace SimpleExpressionEngine
 
                 // Parse it
                 _number = double.Parse(sb.ToString(), CultureInfo.InvariantCulture);
-                _currentToken = Token.Number;
+                Token = Token.Number;
+                CheckPrevToken();
                 return;
             }
 
@@ -123,9 +156,16 @@ namespace SimpleExpressionEngine
 
                 // Setup token
                 _identifier = sb.ToString();
-                _currentToken = Token.Identifier;
+                Token = Token.Identifier;
+                CheckPrevToken();
                 return;
             }
+        }
+
+        private void CheckPrevToken()
+        {
+            if (PrevToken != Token.EOF && !AllowedPrevTokenMap[Token].Contains(PrevToken))
+                throw new SyntaxException($"Unexpected token {Token} after {PrevToken}");
         }
     }
 }
