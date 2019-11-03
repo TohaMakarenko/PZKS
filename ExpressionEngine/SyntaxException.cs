@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleExpressionEngine
+namespace ExpressionEngine
 {
     // Exception for syntax errors
     public class SyntaxException : Exception

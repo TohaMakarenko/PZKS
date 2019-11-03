@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace SimpleExpressionEngine
+namespace ExpressionEngine
 {
     public class Tokenizer
     {
@@ -22,11 +22,11 @@ namespace SimpleExpressionEngine
                 [Token.Subtract] = AllowedBeforeOperations.Concat(new[] {Token.OpenParens}).ToArray(),
                 [Token.Multiply] = AllowedBeforeOperations,
                 [Token.Divide] = AllowedBeforeOperations,
-                [Token.OpenParens] = Operations.Concat(new[] {Token.Identifier, Token.Number}).ToArray(),
+                [Token.OpenParens] = Operations.Concat(new[] {Token.OpenParens, Token.Identifier, Token.Number}).ToArray(),
                 [Token.CloseParens] = new[] {Token.Identifier, Token.Number},
                 [Token.Comma] = new[] {Token.Identifier, Token.Number},
                 [Token.Identifier] = Operations.Concat(new[] {Token.Identifier, Token.Number, Token.OpenParens}).ToArray(),
-                [Token.Number] = Operations.Concat(new[] {Token.Identifier, Token.Number, Token.OpenParens}).ToArray(),
+                [Token.Number] = Operations.Concat(new[] {Token.Comma, Token.Identifier, Token.Number, Token.OpenParens}).ToArray(),
             };
             _reader = reader;
             NextChar();

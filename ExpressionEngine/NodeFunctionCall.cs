@@ -4,30 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleExpressionEngine
+namespace ExpressionEngine
 {
     public class NodeFunctionCall : Node
     {
         public NodeFunctionCall(string functionName, Node[] arguments)
         {
-            _functionName = functionName;
-            _arguments = arguments;
+            FunctionName = functionName;
+            Arguments = arguments;
         }
 
-        string _functionName;
-        Node[] _arguments;
+        public string FunctionName { get; }
+        public Node[] Arguments { get; }
 
         public override double Eval(IContext ctx)
         {
             // Evaluate all arguments
-            var argVals = new double[_arguments.Length];
-            for (int i=0; i<_arguments.Length; i++)
-            {
-                argVals[i] = _arguments[i].Eval(ctx);
+            var argVals = new double[Arguments.Length];
+            for (int i = 0; i < Arguments.Length; i++) {
+                argVals[i] = Arguments[i].Eval(ctx);
             }
 
             // Call the function
-            return ctx.CallFunction(_functionName, argVals);
+            return ctx.CallFunction(FunctionName, argVals);
         }
     }
 }

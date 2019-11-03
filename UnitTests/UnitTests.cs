@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
-using SimpleExpressionEngine;
-using ReflectionContext = SimpleExpressionEngine.ReflectionContext;
+using ExpressionEngine;
+using ReflectionContext = ExpressionEngine.ReflectionContext;
 
 namespace UnitTests
 {
@@ -60,14 +60,14 @@ namespace UnitTests
             // Positive
             Assert.AreEqual(Parser.Parse("+10").Eval(null), 10);
 
-            // Negative of a negative
+            /*// Negative of a negative
             Assert.AreEqual(Parser.Parse("--10").Eval(null), 10);
 
             // Woah!
             Assert.AreEqual(Parser.Parse("--++-+-10").Eval(null), 10);
 
             // All together now
-            Assert.AreEqual(Parser.Parse("10 + -20 - +30").Eval(null), -40);
+            Assert.AreEqual(Parser.Parse("10 + -20 - +30").Eval(null), -40);*/
         }
 
         [Test]

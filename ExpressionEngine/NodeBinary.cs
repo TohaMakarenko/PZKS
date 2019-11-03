@@ -1,31 +1,31 @@
 ﻿using System;
 
-namespace SimpleExpressionEngine
+namespace ExpressionEngine
 {
     // NodeBinary for binary operations such as Add, Subtract etc...
     class NodeBinary : Node
     {
         // Constructor accepts the two nodes to be operated on and function
         // that performs the actual operation
-        public NodeBinary(Node lhs, Node rhs, Func<double, double, double> op)
+        public NodeBinary(Node lhs, Node rhs, Operation operation)
         {
-            _lhs = lhs;
-            _rhs = rhs;
-            _op = op;
+            Lhs = lhs;
+            Rhs = rhs;
+            Operation = operation;
         }
 
-        Node _lhs;                              // Left hand side of the operation
-        Node _rhs;                              // Right hand side of the operation
-        Func<double, double, double> _op;       // The callback operator
+        public Node Lhs { get; }   // Left hand side of the operation
+        public Node Rhs { get; }   // Right hand side of the operation
+        public Operation Operation { get; } // operation
 
         public override double Eval(IContext ctx)
         {
             // Evaluate both sides
-            var lhsVal = _lhs.Eval(ctx);
-            var rhsVal = _rhs.Eval(ctx);
+            var lhsVal = Lhs.Eval(ctx);
+            var rhsVal = Rhs.Eval(ctx);
 
             // Evaluate and return
-            var result = _op(lhsVal, rhsVal);
+            var result = Calculator.ExecuteBinary(Operation, lhsVal, rhsVal);
             return result;
         }
     }

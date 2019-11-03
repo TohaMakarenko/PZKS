@@ -1,4 +1,4 @@
-﻿namespace SimpleExpressionEngine
+﻿namespace ExpressionEngine
 {
     public enum Token
     {

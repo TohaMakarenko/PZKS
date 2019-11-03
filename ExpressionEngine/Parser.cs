@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SimpleExpressionEngine
+namespace ExpressionEngine
 {
     public class Parser
     {
@@ -36,14 +36,14 @@ namespace SimpleExpressionEngine
             while (true)
             {
                 // Work out the operator
-                Func<double, double, double> op = null;
+                Operation? op = null;
                 if (_tokenizer.Token == Token.Add)
                 {
-                    op = (a, b) => a + b;
+                    op = Operation.Add;
                 }
                 else if (_tokenizer.Token == Token.Subtract)
                 {
-                    op = (a, b) => a - b;
+                    op = Operation.Subtract;
                 }
 
                 // Binary operator found?
@@ -57,7 +57,7 @@ namespace SimpleExpressionEngine
                 var rhs = ParseMultiplyDivide();
 
                 // Create a binary node and use it as the left-hand side from now on
-                lhs = new NodeBinary(lhs, rhs, op);
+                lhs = new NodeBinary(lhs, rhs, op.Value);
             }
         }
 
@@ -70,14 +70,14 @@ namespace SimpleExpressionEngine
             while (true)
             {
                 // Work out the operator
-                Func<double, double, double> op = null;
+                Operation? op = null;
                 if (_tokenizer.Token == Token.Multiply)
                 {
-                    op = (a, b) => a * b;
+                    op = Operation.Multiply;
                 }
                 else if (_tokenizer.Token == Token.Divide)
                 {
-                    op = (a, b) => a / b;
+                    op = Operation.Divide;
                 }
 
                 // Binary operator found?
@@ -91,7 +91,7 @@ namespace SimpleExpressionEngine
                 var rhs = ParseUnary();
 
                 // Create a binary node and use it as the left-hand side from now on
-                lhs = new NodeBinary(lhs, rhs, op);
+                lhs = new NodeBinary(lhs, rhs, op.Value);
             }
         }
 
@@ -120,7 +120,7 @@ namespace SimpleExpressionEngine
                     var rhs = ParseUnary();
 
                     // Create unary node
-                    return new NodeUnary(rhs, (a) => -a);
+                    return new NodeUnary(rhs, Operation.Minus);
                 }
 
                 // No positive/negative operator so parse a leaf node

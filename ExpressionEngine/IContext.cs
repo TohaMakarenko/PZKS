@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleExpressionEngine
+namespace ExpressionEngine
 {
     public interface IContext
     {
