@@ -1,5 +1,6 @@
 ﻿using System;
 using ExpressionEngine;
+using ExpressionEngine.Visualization;
 
 namespace Lab1ConsoleApp
 {
@@ -12,6 +13,7 @@ namespace Lab1ConsoleApp
                 var expression = Console.ReadLine();
                 try {
                     var result = Parser.Parse(expression);
+                    result.Print();
                     Console.WriteLine(result != null ? "OK" : "FAILED");
                 }
                 catch (Exception e) {
