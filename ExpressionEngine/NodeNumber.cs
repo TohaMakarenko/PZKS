@@ -8,7 +8,7 @@
             Number = number;
         }
 
-        public double Number { get; private set; }
+        public double Number { get; set; }
 
         public override double Eval(IContext ctx)
         {

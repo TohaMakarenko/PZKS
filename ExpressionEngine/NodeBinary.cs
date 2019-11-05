@@ -7,22 +7,22 @@ namespace ExpressionEngine
     {
         // Constructor accepts the two nodes to be operated on and function
         // that performs the actual operation
-        public NodeBinary(Node lhs, Node rhs, Operation operation)
+        public NodeBinary(Node left, Node right, Operation operation)
         {
-            Lhs = lhs;
-            Rhs = rhs;
+            Left = left;
+            Right = right;
             Operation = operation;
         }
 
-        public Node Lhs { get; }   // Left hand side of the operation
-        public Node Rhs { get; }   // Right hand side of the operation
-        public Operation Operation { get; } // operation
+        public Node Left { get; set; }   // Left hand side of the operation
+        public Node Right { get; set;}   // Right hand side of the operation
+        public Operation Operation { get; set; } // operation
 
         public override double Eval(IContext ctx)
         {
             // Evaluate both sides
-            var lhsVal = Lhs.Eval(ctx);
-            var rhsVal = Rhs.Eval(ctx);
+            var lhsVal = Left.Eval(ctx);
+            var rhsVal = Right.Eval(ctx);
 
             // Evaluate and return
             var result = Calculator.ExecuteBinary(Operation, lhsVal, rhsVal);

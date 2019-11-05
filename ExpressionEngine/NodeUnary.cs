@@ -7,19 +7,19 @@ namespace ExpressionEngine
     {
         // Constructor accepts the two nodes to be operated on and function
         // that performs the actual operation
-        public NodeUnary(Node rhs, Operation operation)
+        public NodeUnary(Node right, Operation operation)
         {
-            Rhs = rhs;
+            Right = right;
             Operation = operation;
         }
 
-        public Node Rhs { get; }
-        public Operation Operation { get; } // operation
+        public Node Right { get; set; }
+        public Operation Operation { get; set; } // operation
 
         public override double Eval(IContext ctx)
         {
             // Evaluate RHS
-            var rhsVal = Rhs.Eval(ctx);
+            var rhsVal = Right.Eval(ctx);
 
             // Evaluate and return
             var result = Calculator.ExecuteUnary(Operation, rhsVal);
