@@ -16,10 +16,10 @@ namespace ExpressionEngine.Parallelization
             if (current == null)
                 return node;
 
-            if (current.Left.GetHeight() > current.Right.GetHeight()) {
+            if (current.Left.GetHeight() > current.Right.GetHeight() + 1) {
                 current = RotateRight(current);
             }
-            else {
+            else if (current.Right.GetHeight() > current.Left.GetHeight() + 1) {
                 current = RotateLeft(current);
             }
 
