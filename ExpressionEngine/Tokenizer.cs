@@ -23,7 +23,7 @@ namespace ExpressionEngine
                 [Token.Multiply] = AllowedBeforeOperations,
                 [Token.Divide] = AllowedBeforeOperations,
                 [Token.OpenParens] = Operations.Concat(new[] {Token.OpenParens, Token.Identifier, Token.Number}).ToArray(),
-                [Token.CloseParens] = new[] {Token.Identifier, Token.Number},
+                [Token.CloseParens] = new[] {Token.Identifier, Token.Number, Token.CloseParens},
                 [Token.Comma] = new[] {Token.Identifier, Token.Number},
                 [Token.Identifier] = Operations.Concat(new[] {Token.Identifier, Token.Number, Token.OpenParens}).ToArray(),
                 [Token.Number] = Operations.Concat(new[] {Token.Comma, Token.Identifier, Token.Number, Token.OpenParens}).ToArray(),

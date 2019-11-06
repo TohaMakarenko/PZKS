@@ -1,3 +1,4 @@
+using System;
 using ExpressionEngine.Helpers;
 
 namespace ExpressionEngine.Parallelization
@@ -7,27 +8,23 @@ namespace ExpressionEngine.Parallelization
         public static Node Optimize(Node node)
         {
             node = ReplaceSubtract(node);
-            
+
+            if (node is NodeUnary nodeUnary)
+                return Optimize(nodeUnary);
+
             var current = node as NodeBinary;
             if (current == null)
                 return node;
-            int bFactor = BalanceFactor(current);
-            if (bFactor > 1) {
-                if (BalanceFactor(current.Left) > 0) {
-                    current = RotateLL(current);
-                }
-                else {
-                    current = RotateLR(current);
-                }
+
+            if (current.Left.GetHeight() > current.Right.GetHeight()) {
+                current = RotateRight(current);
             }
-            else if (bFactor < -1) {
-                if (BalanceFactor(current.Right) > 0) {
-                    current = RotateRL(current);
-                }
-                else {
-                    current = RotateRR(current);
-                }
+            else {
+                current = RotateLeft(current);
             }
+
+            current.Left = Optimize(current.Left);
+            current.Right = Optimize(current.Right);
 
             return current;
         }
@@ -69,39 +66,98 @@ namespace ExpressionEngine.Parallelization
             return bFactor;
         }
 
-        private static Node RotateRight(Node node)
+        private static NodeBinary RotateRight(NodeBinary nodeBinary)
         {
-            if()
+            switch (nodeBinary.Operation) {
+                case Operation.Add: {
+                    if (nodeBinary.Left is NodeBinary leftBinary && leftBinary.Operation == Operation.Add) {
+                        nodeBinary.Left = leftBinary.Right;
+                        leftBinary.Right = nodeBinary;
+                        return leftBinary;
+                    }
+
+                    break;
+                }
+                case Operation.Minus:
+                case Operation.Subtract:
+                    throw new InvalidOperationException($"Invalid operation {nodeBinary.Operation}");
+                    break;
+                case Operation.Multiply: {
+                    if (nodeBinary.Left is NodeBinary leftBinary && leftBinary.Operation == Operation.Multiply) {
+                        nodeBinary.Left = leftBinary.Right;
+                        leftBinary.Right = nodeBinary;
+                        return leftBinary;
+                    }
+
+                    break;
+                }
+                case Operation.Divide: {
+                    if (nodeBinary.Left is NodeBinary leftBinary && leftBinary.Operation == Operation.Divide) {
+                        nodeBinary.Left = leftBinary.Right;
+                        nodeBinary.Operation = Operation.Multiply;
+                        leftBinary.Right = nodeBinary;
+                        return leftBinary;
+                    }
+
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return nodeBinary;
         }
 
-        private static NodeBinary RotateRR(NodeBinary parent)
+        private static NodeBinary RotateLeft(NodeBinary nodeBinary)
         {
-            Node pivot = parent.Right;
-            parent.Right = pivot.Lhs;
-            pivot.Lhs = parent;
-            return pivot;
-        }
+            switch (nodeBinary.Operation) {
+                case Operation.Add: {
+                    if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Add) {
+                        nodeBinary.Right = rightBinary.Left;
+                        rightBinary.Left = nodeBinary;
+                        return rightBinary;
+                    }
 
-        private static NodeBinary RotateLL(NodeBinary parent)
-        {
-            Node pivot = parent.Left;
-            parent.Left = pivot.Rhs;
-            pivot.Rhs = parent;
-            return pivot;
-        }
+                    break;
+                }
+                case Operation.Minus:
+                case Operation.Subtract:
+                    throw new InvalidOperationException($"Invalid operation {nodeBinary.Operation}");
+                    break;
+                case Operation.Multiply: {
+                    if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Multiply) {
+                        nodeBinary.Right = rightBinary.Left;
+                        rightBinary.Left = nodeBinary;
+                        return rightBinary;
+                    }
 
-        private static NodeBinary RotateLR(NodeBinary parent)
-        {
-            Node pivot = parent.Left;
-            parent.Left = RotateRR(pivot);
-            return RotateLL(parent);
-        }
+                    break;
+                }
+                case Operation.Divide: {
+                    {
+                        if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Divide) {
+                            nodeBinary.Right = rightBinary.Right;
+                            nodeBinary.Operation = Operation.Multiply;
+                            rightBinary.Right = rightBinary.Left;
+                            rightBinary.Left = nodeBinary;
+                            return rightBinary;
+                        }
+                    }
+                    {
+                        if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Multiply) {
+                            nodeBinary.Right = rightBinary.Left;
+                            rightBinary.Operation = Operation.Divide;
+                            rightBinary.Left = nodeBinary;
+                            return rightBinary;
+                        }
+                    }
+                }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
-        private static NodeBinary RotateRL(NodeBinary parent)
-        {
-            Node pivot = parent.Right;
-            parent.Right = RotateLL(pivot);
-            return RotateRR(parent);
+            return nodeBinary;
         }
     }
 }
