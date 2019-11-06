@@ -15,6 +15,11 @@ namespace Lab1ConsoleApp
                 var expression = Console.ReadLine();
                 try {
                     var result = Parser.Parse(expression);
+                    if(result == null) {
+                        Console.WriteLine("FAILED");
+                        continue;
+                    }
+                    Console.WriteLine("OK");
                     Console.WriteLine($"Result : {result.Eval()}");
                     Console.WriteLine($"Height : {result.GetHeight()}");
                     result.Print();
@@ -24,7 +29,6 @@ namespace Lab1ConsoleApp
                     Console.WriteLine($"Result : {optimized.Eval()}");
                     Console.WriteLine($"Height : {optimized.GetHeight()}");
                     optimized.Print();
-                    Console.WriteLine(result != null ? "OK" : "FAILED");
                 }
                 catch (Exception e) {
                     Console.WriteLine(e.Message);

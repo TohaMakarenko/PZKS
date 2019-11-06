@@ -50,21 +50,7 @@ namespace ExpressionEngine.Parallelization
 
             return node;
         }
-
-        /*private static Node OptimizeDivision(Node node)
-        {
-            if (!(node is NodeBinary nodeBinary) || nodeBinary.Operation != Operation.Divide)
-                return node;
-            
-        }*/
-
-        private static int BalanceFactor(Node current)
-        {
-            var left = current.GetLeft()?.GetHeight() ?? 0;
-            var right = current.GetRight()?.GetHeight() ?? 0;
-            int bFactor = left - right;
-            return bFactor;
-        }
+        
 
         private static NodeBinary RotateRight(NodeBinary nodeBinary)
         {
