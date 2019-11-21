@@ -8,31 +8,46 @@ namespace ExpressionEngine.Parallelization
         public static Node Optimize(Node node)
         {
             node = ReplaceSubtract(node);
+            return Balance(node);
+        }
 
+        private static Node Balance(Node node)
+        {
             if (node is NodeUnary nodeUnary)
-                return Optimize(nodeUnary);
+                return Balance(nodeUnary.Right);
 
             var current = node as NodeBinary;
             if (current == null)
                 return node;
 
-            if (current.Left.GetHeight() > current.Right.GetHeight() + 1) {
-                current = RotateRight(current);
-            }
-            else if (current.Right.GetHeight() > current.Left.GetHeight() + 1) {
-                current = RotateLeft(current);
+            while (current.Left.GetHeight() > current.Right.GetHeight() + 1)
+            {
+                var newCurrent = RotateRight(current);
+                if (newCurrent == current)
+                    break;
+                current = newCurrent;
             }
 
-            current.Left = Optimize(current.Left);
-            current.Right = Optimize(current.Right);
+            while (current.Right.GetHeight() > current.Left.GetHeight() + 1)
+            {
+                var newCurrent = RotateLeft(current);
+                if (newCurrent == current)
+                    break;
+                current = newCurrent;
+            }
+
+            current.Left = Balance(current.Left);
+            current.Right = Balance(current.Right);
 
             return current;
         }
 
         private static Node ReplaceSubtract(Node node)
         {
-            if (node is NodeBinary nodeBinary) {
-                if (nodeBinary.Operation == Operation.Subtract) {
+            if (node is NodeBinary nodeBinary)
+            {
+                if (nodeBinary.Operation == Operation.Subtract)
+                {
                     nodeBinary.Operation = Operation.Add;
                     nodeBinary.Right = new NodeUnary(nodeBinary.Right, Operation.Minus);
                 }
@@ -41,7 +56,8 @@ namespace ExpressionEngine.Parallelization
                 ReplaceSubtract(nodeBinary.Right);
             }
 
-            if (node is NodeUnary nodeUnary) {
+            if (node is NodeUnary nodeUnary)
+            {
                 if (nodeUnary.Right is NodeNumber nodeNumber)
                     nodeNumber.Number = -nodeNumber.Number;
                 else
@@ -50,13 +66,16 @@ namespace ExpressionEngine.Parallelization
 
             return node;
         }
-        
+
 
         private static NodeBinary RotateRight(NodeBinary nodeBinary)
         {
-            switch (nodeBinary.Operation) {
-                case Operation.Add: {
-                    if (nodeBinary.Left is NodeBinary leftBinary && leftBinary.Operation == Operation.Add) {
+            switch (nodeBinary.Operation)
+            {
+                case Operation.Add:
+                {
+                    if (nodeBinary.Left is NodeBinary leftBinary && leftBinary.Operation == Operation.Add)
+                    {
                         nodeBinary.Left = leftBinary.Right;
                         leftBinary.Right = nodeBinary;
                         return leftBinary;
@@ -68,8 +87,10 @@ namespace ExpressionEngine.Parallelization
                 case Operation.Subtract:
                     throw new InvalidOperationException($"Invalid operation {nodeBinary.Operation}");
                     break;
-                case Operation.Multiply: {
-                    if (nodeBinary.Left is NodeBinary leftBinary && leftBinary.Operation == Operation.Multiply) {
+                case Operation.Multiply:
+                {
+                    if (nodeBinary.Left is NodeBinary leftBinary && leftBinary.Operation == Operation.Multiply)
+                    {
                         nodeBinary.Left = leftBinary.Right;
                         leftBinary.Right = nodeBinary;
                         return leftBinary;
@@ -77,8 +98,10 @@ namespace ExpressionEngine.Parallelization
 
                     break;
                 }
-                case Operation.Divide: {
-                    if (nodeBinary.Left is NodeBinary leftBinary && leftBinary.Operation == Operation.Divide) {
+                case Operation.Divide:
+                {
+                    if (nodeBinary.Left is NodeBinary leftBinary && leftBinary.Operation == Operation.Divide)
+                    {
                         nodeBinary.Left = leftBinary.Right;
                         nodeBinary.Operation = Operation.Multiply;
                         leftBinary.Right = nodeBinary;
@@ -96,9 +119,12 @@ namespace ExpressionEngine.Parallelization
 
         private static NodeBinary RotateLeft(NodeBinary nodeBinary)
         {
-            switch (nodeBinary.Operation) {
-                case Operation.Add: {
-                    if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Add) {
+            switch (nodeBinary.Operation)
+            {
+                case Operation.Add:
+                {
+                    if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Add)
+                    {
                         nodeBinary.Right = rightBinary.Left;
                         rightBinary.Left = nodeBinary;
                         return rightBinary;
@@ -110,8 +136,10 @@ namespace ExpressionEngine.Parallelization
                 case Operation.Subtract:
                     throw new InvalidOperationException($"Invalid operation {nodeBinary.Operation}");
                     break;
-                case Operation.Multiply: {
-                    if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Multiply) {
+                case Operation.Multiply:
+                {
+                    if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Multiply)
+                    {
                         nodeBinary.Right = rightBinary.Left;
                         rightBinary.Left = nodeBinary;
                         return rightBinary;
@@ -119,9 +147,11 @@ namespace ExpressionEngine.Parallelization
 
                     break;
                 }
-                case Operation.Divide: {
+                case Operation.Divide:
+                {
                     {
-                        if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Divide) {
+                        if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Divide)
+                        {
                             nodeBinary.Right = rightBinary.Right;
                             nodeBinary.Operation = Operation.Multiply;
                             rightBinary.Right = rightBinary.Left;
@@ -130,7 +160,8 @@ namespace ExpressionEngine.Parallelization
                         }
                     }
                     {
-                        if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Multiply) {
+                        if (nodeBinary.Right is NodeBinary rightBinary && rightBinary.Operation == Operation.Multiply)
+                        {
                             nodeBinary.Right = rightBinary.Left;
                             rightBinary.Operation = Operation.Divide;
                             rightBinary.Left = nodeBinary;

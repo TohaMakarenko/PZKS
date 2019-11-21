@@ -43,7 +43,7 @@ namespace ExpressionEngine.Helpers
             if (node is NodeBinary nodeBinary)
                 return Math.Max(nodeBinary.Right.GetHeight(), nodeBinary.Left.GetHeight()) + 1;
             if (node is NodeUnary nodeUnary)
-                return nodeUnary.GetHeight();
+                return nodeUnary.Right.GetHeight();
             return 0;
         }
     }
