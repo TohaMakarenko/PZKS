@@ -7,6 +7,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ExpressionEngine\ExpressionEngine.csproj" />
+      <ProjectReference Include="..\DataFlow\DataFlow.csproj" />
     </ItemGroup>
 
 </Project>
