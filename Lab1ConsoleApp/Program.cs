@@ -20,13 +20,13 @@ namespace Lab1ConsoleApp
                         continue;
                     }
                     Console.WriteLine("OK");
-//                    Console.WriteLine($"Result : {result.Eval()}");
+                    Console.WriteLine($"Result : {result.Eval()}");
                     Console.WriteLine($"Height : {result.GetHeight()}");
                     result.Print();
                     
                     Console.WriteLine("Optimized:");
                     var optimized = ExpressionOptimizer.Optimize(result);
-//                    Console.WriteLine($"Result : {optimized.Eval()}");
+                    Console.WriteLine($"Result : {optimized.Eval()}");
                     Console.WriteLine($"Height : {optimized.GetHeight()}");
                     optimized.Print();
                 }

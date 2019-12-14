@@ -7,14 +7,17 @@ namespace ExpressionEngine.Parallelization
     {
         public static Node Optimize(Node node)
         {
-            node = ReplaceSubtract(node);
+            //node = ReplaceSubtract(node);
             return Balance(node);
         }
 
         private static Node Balance(Node node)
         {
             if (node is NodeUnary nodeUnary)
-                return Balance(nodeUnary.Right);
+            {
+                nodeUnary.Right = Balance(nodeUnary.Right);
+                return nodeUnary;
+            }
 
             var current = node as NodeBinary;
             if (current == null)
@@ -56,7 +59,7 @@ namespace ExpressionEngine.Parallelization
                 ReplaceSubtract(nodeBinary.Right);
             }
 
-            if (node is NodeUnary nodeUnary)
+            if (node is NodeUnary nodeUnary && nodeUnary.Operation == Operation.Minus)
             {
                 if (nodeUnary.Right is NodeNumber nodeNumber)
                     nodeNumber.Number = -nodeNumber.Number;
@@ -73,6 +76,7 @@ namespace ExpressionEngine.Parallelization
             switch (nodeBinary.Operation)
             {
                 case Operation.Add:
+                case Operation.Subtract:
                 {
                     if (nodeBinary.Left is NodeBinary leftBinary && leftBinary.Operation == Operation.Add)
                     {
@@ -83,8 +87,7 @@ namespace ExpressionEngine.Parallelization
 
                     break;
                 }
-                case Operation.Minus:
-                case Operation.Subtract:
+                case Operation.Minus:                
                     throw new InvalidOperationException($"Invalid operation {nodeBinary.Operation}");
                     break;
                 case Operation.Multiply:
@@ -133,8 +136,9 @@ namespace ExpressionEngine.Parallelization
                     break;
                 }
                 case Operation.Minus:
-                case Operation.Subtract:
                     throw new InvalidOperationException($"Invalid operation {nodeBinary.Operation}");
+                case Operation.Subtract:
+                    return nodeBinary;
                     break;
                 case Operation.Multiply:
                 {
