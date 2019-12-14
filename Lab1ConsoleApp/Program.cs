@@ -1,4 +1,5 @@
 ﻿using System;
+using DataFlow;
 using ExpressionEngine;
 using ExpressionEngine.Helpers;
 using ExpressionEngine.Parallelization;
@@ -29,9 +30,15 @@ namespace Lab1ConsoleApp
                     Console.WriteLine($"Result : {optimized.Eval()}");
                     Console.WriteLine($"Height : {optimized.GetHeight()}");
                     optimized.Print();
+
+                    Console.WriteLine("Data Flow:");
+                    var system = DataFlowSystem.BuildSystem(optimized, 4);
+                    DataFlowHelper.PrintSystem(system);
+                    var systemResult = system.Stasrt();
+                    DataFlowHelper.PrintSystemResult(systemResult);
                 }
                 catch (Exception e) {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e);
                 }
             }
         }

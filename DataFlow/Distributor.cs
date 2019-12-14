@@ -26,27 +26,25 @@ namespace DataFlow
                 if (activatedCommand == null)
                     notActivatedCommand = CommandsMemory.NotActiveCommands
                         .FirstOrDefault(x => x.Id == operant.NextCommandId);
+                var command = activatedCommand ?? notActivatedCommand;
+                if (command == null)
+                    continue;
+
                 var commandOperantsCount = CommandsMemory.Operants
                     .Where(x => x.NextCommandId == operant.NextCommandId)
                     .Count();
-                var command = activatedCommand ?? notActivatedCommand;
                 if (GetCommandRequiredOperantsCount(command.Type) == commandOperantsCount)
                 {
                     if (activatedCommand != null)
-                    {
                         CommandsMemory.ActivatedCommands.Remove(activatedCommand);
-                        CommandsMemory.SRAM.Add(activatedCommand);
-                    }
                     else if (notActivatedCommand != null)
-                    {
-                        CommandsMemory.NotActiveCommands.Remove(activatedCommand);
-                        CommandsMemory.SRAM.Add(notActivatedCommand);
-                    }
+                        CommandsMemory.NotActiveCommands.Remove(notActivatedCommand);
+                    command.IsActive = true;
+                    CommandsMemory.SRAM.Add(command);
                 }
-
-                if (notActivatedCommand != null)
+                else if (notActivatedCommand != null)
                 {
-                    CommandsMemory.NotActiveCommands.Remove(activatedCommand);
+                    CommandsMemory.NotActiveCommands.Remove(notActivatedCommand);
                     CommandsMemory.ActivatedCommands.Add(notActivatedCommand);
                 }
             }

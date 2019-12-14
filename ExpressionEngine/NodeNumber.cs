@@ -1,7 +1,7 @@
 ﻿namespace ExpressionEngine
 {
     // NodeNumber represents a literal number in the expression
-    class NodeNumber : Node
+    public class NodeNumber : Node
     {
         public NodeNumber(double number)
         {

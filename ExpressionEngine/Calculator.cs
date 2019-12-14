@@ -4,19 +4,19 @@ namespace ExpressionEngine
 {
     public static class Calculator
     {
-        public static double ExecuteBinary(Operation operation, double right, double left)
+        public static double ExecuteBinary(Operation operation, double left, double right)
         {
             switch (operation) {
                 case Operation.Add:
-                    return right + left;
+                    return left + right;
                 case Operation.Minus:
                     throw new InvalidOperationException("Minus is unary operation");
                 case Operation.Subtract:
-                    return right - left;
+                    return left - right;
                 case Operation.Multiply:
-                    return right * left;
+                    return left * right;
                 case Operation.Divide:
-                    return right / left;
+                    return left / right;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(operation), operation, null);
             }

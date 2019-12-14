@@ -3,7 +3,7 @@
 namespace ExpressionEngine
 {
     // NodeUnary for unary operations such as Negate
-    class NodeUnary : Node
+    public class NodeUnary : Node
     {
         // Constructor accepts the two nodes to be operated on and function
         // that performs the actual operation

@@ -3,7 +3,7 @@
 namespace ExpressionEngine
 {
     // NodeBinary for binary operations such as Add, Subtract etc...
-    class NodeBinary : Node
+    public class NodeBinary : Node
     {
         // Constructor accepts the two nodes to be operated on and function
         // that performs the actual operation

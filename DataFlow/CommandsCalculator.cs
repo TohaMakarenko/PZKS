@@ -8,26 +8,26 @@ namespace DataFlow
     {        
         public static Operant Calculate(Command command, List<Operant> operants)
         {
+            var left = operants.FirstOrDefault(x => x.Order == OperantOrder.Left)?.Value;
             var right = operants.FirstOrDefault(x => x.Order == OperantOrder.Right)?.Value;
-            var left = operants.FirstOrDefault(x => x.Order == OperantOrder.Right)?.Value;
             double? result = null;
 
             switch (command.Type)
             {
                 case CommandType.Add:
-                    result = right + left;
+                    result = left + right;
                     break;
                 case CommandType.Minus:
-                    result = -right;
+                    result = -left;
                     break;
                 case CommandType.Subtract:
-                    result = right - left;
+                    result = left - right;
                     break;
                 case CommandType.Multiply:
-                    result = right * left;
+                    result = left * right;
                     break;
                 case CommandType.Divide:
-                    result = right / left;
+                    result = left / right;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
