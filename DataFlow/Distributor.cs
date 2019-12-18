@@ -7,6 +7,7 @@ namespace DataFlow
     public class Distributor
     {
         public CommandsMemory CommandsMemory { get; }
+
         public Distributor(CommandsMemory commandsMemory)
         {
             CommandsMemory = commandsMemory;
@@ -18,8 +19,7 @@ namespace DataFlow
                 return;
 
             CommandsMemory.Operants.AddRange(operants);
-            foreach (var operant in operants)
-            {
+            foreach (var operant in operants) {
                 var activatedCommand = CommandsMemory.ActivatedCommands
                     .FirstOrDefault(x => x.Id == operant.NextCommandId);
                 Command notActivatedCommand = null;
@@ -31,10 +31,8 @@ namespace DataFlow
                     continue;
 
                 var commandOperantsCount = CommandsMemory.Operants
-                    .Where(x => x.NextCommandId == operant.NextCommandId)
-                    .Count();
-                if (GetCommandRequiredOperantsCount(command.Type) == commandOperantsCount)
-                {
+                    .Count(x => x.NextCommandId == operant.NextCommandId);
+                if (GetCommandRequiredOperantsCount(command.Type) == commandOperantsCount) {
                     if (activatedCommand != null)
                         CommandsMemory.ActivatedCommands.Remove(activatedCommand);
                     else if (notActivatedCommand != null)
@@ -42,8 +40,7 @@ namespace DataFlow
                     command.IsActive = true;
                     CommandsMemory.SRAM.Add(command);
                 }
-                else if (notActivatedCommand != null)
-                {
+                else if (notActivatedCommand != null) {
                     CommandsMemory.NotActiveCommands.Remove(notActivatedCommand);
                     CommandsMemory.ActivatedCommands.Add(notActivatedCommand);
                 }
@@ -52,12 +49,11 @@ namespace DataFlow
 
         private int GetCommandRequiredOperantsCount(CommandType commandType)
         {
-            switch (commandType)
-            {
+            switch (commandType) {
                 case CommandType.Add:
                 case CommandType.Divide:
-                case CommandType.Subtract:
-                case CommandType.Multiply:
+                case CommandType.Subtr:
+                case CommandType.Mult:
                     return 2;
                 case CommandType.Input:
                 case CommandType.Minus:

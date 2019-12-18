@@ -7,27 +7,33 @@ namespace DataFlow
     public class Processor
     {
         public List<ProcessorElement> Elements { get; private set; }
+
         public Processor(int elemtsNumber)
         {
             Elements = Enumerable.Range(0, elemtsNumber)
-                .Select(x => new ProcessorElement())
+                .Select((x, index) => new ProcessorElement(index))
                 .ToList();
         }
     }
 
     public class ProcessorElement
     {
-        public static Dictionary<CommandType, int> CommandsComplexityMap = new Dictionary<DataFlow.CommandType, int>()
-        {
+        public static Dictionary<CommandType, int> CommandsComplexityMap = new Dictionary<DataFlow.CommandType, int>() {
             [CommandType.Add] = 1,
-            [CommandType.Subtract] = 1,
+            [CommandType.Subtr] = 1,
             [CommandType.Minus] = 1,
-            [CommandType.Multiply] = 1,
-            [CommandType.Divide] = 1,
+            [CommandType.Mult] = 2,
+            [CommandType.Divide] = 4,
             [CommandType.Input] = 1,
         };
 
+        public ProcessorElement(int id)
+        {
+            Id = id;
+        }
+        public int Id { get; set; }
         public int TicksLeft { get; private set; }
+        private int _ticks;
         public bool IsFree => TicksLeft == 0;
 
         public Command Command { get; private set; }
@@ -38,13 +44,16 @@ namespace DataFlow
             if (TicksLeft > 0)
                 throw new InvalidOperationException("Processor element hasn`t calculated previous");
             TicksLeft = CommandsComplexityMap[command.Type];
+            _ticks = 0;
             Command = command;
             Operants = operants;
         }
 
         public Operant Tick()
         {
-            TicksLeft -= 1;
+            Console.WriteLine($"Proc Elem #{Id}: Tick: {_ticks}, Command: {Command.Id}, {Command.Type}");
+            TicksLeft --;
+            _ticks++;
             if (TicksLeft != 0)
                 return null;
             return CommandCalculator.Calculate(Command, Operants);

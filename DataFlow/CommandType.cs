@@ -6,8 +6,8 @@ namespace DataFlow
     {
         Add,
         Minus,
-        Subtract,
-        Multiply,
+        Subtr,
+        Mult,
         Divide,
         Input
     }

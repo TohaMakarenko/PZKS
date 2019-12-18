@@ -17,11 +17,12 @@ namespace DataFlow
             Distributor = distributor;
         }
 
-        public List<Operant> Tick() {
+        public List<Operant> Tick()
+        {
             var operants = new List<Operant>();
-            foreach(var procElement in Processor.Elements.Where(x => x.IsFree)) {
+            foreach (var procElement in Processor.Elements.Where(x => x.IsFree)) {
                 var command = CommandsMemory.SRAM.FirstOrDefault();
-                if(command == null)
+                if (command == null)
                     break;
                 CommandsMemory.SRAM.Remove(command);
                 var commandOperants = CommandsMemory.Operants
@@ -30,11 +31,13 @@ namespace DataFlow
                 procElement.SetCommand(command, commandOperants);
                 CommandsMemory.Operants.RemoveAll(x => commandOperants.Contains(x));
             }
-            foreach(var procElement in Processor.Elements.Where(x => !x.IsFree)) {
+
+            foreach (var procElement in Processor.Elements.Where(x => !x.IsFree)) {
                 var tickResult = procElement.Tick();
-                if(tickResult != null)
+                if (tickResult != null)
                     operants.Add(tickResult);
             }
+
             Distributor.DistributeOperants(operants);
             return operants;
         }

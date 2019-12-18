@@ -21,40 +21,38 @@ namespace DataFlow
 
         private static void BuildTables(DataFlowSystem system, Node node, int nextCommandId, OperantOrder order)
         {
-            if (node is NodeBinary nodeBinary)
-            {
-                var command = new Command()
-                {
+            if (node is NodeBinary nodeBinary) {
+                var command = new Command() {
                     Id = system._lastCommandId++,
                     IsActive = false,
                     NextCommandId = nextCommandId,
                     Order = order,
-                    Type = (CommandType)nodeBinary.Operation
+                    Type = (CommandType) nodeBinary.Operation
                 };
                 system.CommandsMemory.NotActiveCommands.Add(command);
                 BuildTables(system, nodeBinary.Right, command.Id, OperantOrder.Right);
                 BuildTables(system, nodeBinary.Left, command.Id, OperantOrder.Left);
             }
-            if (node is NodeUnary nodeUnary)
-            {
-                var command = new Command()
-                {
+
+            if (node is NodeUnary nodeUnary) {
+                var command = new Command() {
                     Id = system._lastCommandId++,
                     IsActive = false,
                     NextCommandId = nextCommandId,
                     Order = order,
-                    Type = (CommandType)nodeUnary.Operation
+                    Type = (CommandType) nodeUnary.Operation
                 };
                 system.CommandsMemory.NotActiveCommands.Add(command);
                 BuildTables(system, nodeUnary.Right, command.Id, OperantOrder.Right);
             }
-            if(node is NodeNumber nodeNumber) {
+
+            if (node is NodeNumber nodeNumber) {
                 var operant = new Operant {
                     NextCommandId = nextCommandId,
                     Order = order,
                     Value = nodeNumber.Number
                 };
-                system.Distributor.DistributeOperants(new List<Operant>{operant});
+                system.Distributor.DistributeOperants(new List<Operant> {operant});
             }
         }
 
@@ -65,21 +63,31 @@ namespace DataFlow
         public Distributor Distributor { get; protected set; }
         protected DataFlowSystem() { }
 
-        public DataFlowSystemResult Stasrt() {
+        public DataFlowSystemResult Start()
+        {
             var result = new DataFlowSystemResult();
-            while (true)
-            {
+            while (true) {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.BackgroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"TICK: {result.Ticks}");
+                Console.ResetColor();
+
+                Console.WriteLine("Processor Elements");
                 Arbitrator.Tick();
-                result.Ticks++;
-                // System.Console.WriteLine($"~~~TICK: {result.Ticks}");
-                // DataFlowHelper.PrintSystem(this);
-                if(!CommandsMemory.NotActiveCommands.Any()
+
+                DataFlowHelper.PrintSystem(this);
+                Console.WriteLine();
+
+
+                if (!CommandsMemory.NotActiveCommands.Any()
                     && !CommandsMemory.ActivatedCommands.Any()
-                    && !CommandsMemory.SRAM.Any())
-                {
+                    && !CommandsMemory.SRAM.Any()) {
                     result.Result = CommandsMemory.Operants.FirstOrDefault().Value;
                     return result;
                 }
+
+                result.Ticks++;
             }
         }
     }
