@@ -65,8 +65,8 @@ namespace Lab1ConsoleApp
 
         static void PrintHeader(string str)
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.BackgroundColor = ConsoleColor.Black;
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Black;
             Console.WriteLine($"\r\n{str}\r\n");
             Console.ResetColor();
         }
